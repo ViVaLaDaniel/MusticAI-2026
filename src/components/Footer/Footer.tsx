@@ -20,7 +20,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-slate-500 text-sm max-w-xs font-light">
-              The world's most advanced AI Oracle, blending ancient wisdom with 
+              The world&apos;s most advanced AI Oracle, blending ancient wisdom with
               neural networks to predict your destiny.
             </p>
           </div>

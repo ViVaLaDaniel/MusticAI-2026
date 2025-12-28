@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, X, Star, Zap } from "lucide-react";
+import { Check, X, Star } from "lucide-react";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { Container } from "@/components/ui/Container";
 import { loadStripe } from '@stripe/stripe-js';
@@ -39,6 +39,7 @@ function PricingCard({ tier, price, name, description, features, missingFeatures
       const stripe = await stripePromise;
       if (!stripe) throw new Error("Stripe failed to load");
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error: stripeError } = await (stripe as any).redirectToCheckout({ sessionId });
       if (stripeError) throw stripeError;
       

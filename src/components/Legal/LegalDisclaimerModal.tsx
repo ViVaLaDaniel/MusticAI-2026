@@ -20,6 +20,7 @@ export function LegalDisclaimerModal() {
     const isLegalPage = pathname?.startsWith("/legal");
     
     if (!accepted && !isLegalPage) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsOpen(true);
       document.body.style.overflow = 'hidden';
     } else {

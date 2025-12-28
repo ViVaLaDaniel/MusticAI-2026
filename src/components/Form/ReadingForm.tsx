@@ -15,13 +15,13 @@ import { Lock } from "lucide-react";
 
 export function ReadingForm() {
   const [isLoading, setIsLoading] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [readingData, setReadingData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [showPayment, setShowPayment] = useState(false);
   const [currentTier, setCurrentTier] = useState<'free' | 'medium' | 'pro'>('free'); // Changed bool to string tier
 
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -157,9 +157,9 @@ export function ReadingForm() {
 
                 {/* Main Reading */}
                 <div className="bg-white/5 p-6 rounded-xl border border-white/10 text-slate-200 text-lg leading-relaxed italic relative">
-                   <span className="absolute -top-4 -left-2 text-4xl text-gold/30">"</span>
+                   <span className="absolute -top-4 -left-2 text-4xl text-gold/30">&quot;</span>
                    {readingData.reading}
-                   <span className="absolute -bottom-6 -right-2 text-4xl text-gold/30">"</span>
+                   <span className="absolute -bottom-6 -right-2 text-4xl text-gold/30">&quot;</span>
                 </div>
 
                 {/* Extended Content Grid */}
