@@ -3,16 +3,21 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { cookies } from 'next/headers';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-
 export async function generateReading(formData: FormData) {
   const name = formData.get('name') as string;
   const dob = formData.get('dob') as string;
   const question = formData.get('question') as string;
-  const tier = (formData.get('tier') as string) || 'free'; // 'free' | 'medium' | 'pro'
+
+  // SECURE AUTH: Get tier from verified HTTP-only cookie, NOT client input
+  const cookieStore = await cookies();
+  const tierCookie = cookieStore.get('mystic_tier');
+  const validTier = tierCookie?.value === 'medium' || tierCookie?.value === 'pro'
+    ? tierCookie.value
+    : 'free';
+
+  const tier = validTier; // Override any client input with server truth
 
   // 1. Check Cookies for Limits
-  const cookieStore = await cookies();
   const lastReadingsCookie = cookieStore.get('mystic_readings_log');
   
   if (tier !== 'pro') {
@@ -51,6 +56,7 @@ export async function generateReading(formData: FormData) {
   }
 
   try {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
     const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
 
     let structureInstruction = "";

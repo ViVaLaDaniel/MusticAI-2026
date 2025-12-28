@@ -39,7 +39,7 @@ export async function POST(req: Request) {
         },
       ],
       mode: 'payment',
-      success_url: `${origin}/payment/success?tier=${tier}`,
+      success_url: `${origin}/payment/success?tier=${tier}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/payment/cancel`,
       metadata: {
         tier: tier,
@@ -47,6 +47,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ sessionId: session.id });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     console.error('Stripe API Error:', err);
     return NextResponse.json({ error: err.message }, { status: 500 });

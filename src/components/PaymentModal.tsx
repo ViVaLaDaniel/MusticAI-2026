@@ -2,7 +2,7 @@
 
 import { loadStripe } from '@stripe/stripe-js';
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Star, Lock } from "lucide-react";
+import { X, Check } from "lucide-react";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { useState } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -38,10 +38,12 @@ export function PaymentModal({ isOpen, onClose, onUpgrade }: PaymentModalProps) 
       const stripe = await stripePromise;
       if (!stripe) throw new Error("Stripe failed to load");
 
-      const { error: stripeError } = await stripe.redirectToCheckout({ sessionId });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error: stripeError } = await (stripe as any).redirectToCheckout({ sessionId });
 
       if (stripeError) throw stripeError;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("Payment Error:", err);
       setError(err.message || "Payment initialization failed");

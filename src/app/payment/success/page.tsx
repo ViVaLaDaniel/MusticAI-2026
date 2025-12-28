@@ -3,26 +3,21 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Check, Star } from 'lucide-react';
+import { Check, Star, Loader2, AlertCircle } from 'lucide-react';
 import { GlowButton } from '@/components/ui/GlowButton';
 import { GlassCard } from '@/components/ui/GlassCard';
-import Cookies from 'js-cookie';
+import { verifyPaymentSession } from '@/app/actions/payment';
 
 function SuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const tier = searchParams.get('tier');
+  const tier = searchParams.get('tier'); // For display only
+  const sessionId = searchParams.get('session_id'); // Actual proof
+
+  const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
   const [countdown, setCountdown] = useState(5);
 
-  useEffect(() => {
-    if (tier) {
-       // Ideally this should be a verified server-side set-cookie after webhook verification
-       // For this MVP, we set a client-side marker or just rely on the user knowing they bought it
-       // To actually "activate" it based on our previous logic, let's set a simple cookie
-       // NOTE: This is insecure for real production without webhooks, but fits the "Immediate" constraint.
-       Cookies.set('mystic_purchased_tier', tier, { expires: 30 }); 
-    }
-
+  const startTimer = () => {
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -33,9 +28,52 @@ function SuccessContent() {
         return prev - 1;
       });
     }, 1000);
-
     return () => clearInterval(timer);
-  }, [tier, router]);
+  };
+
+  useEffect(() => {
+    if (!sessionId) {
+      setStatus('error');
+      return;
+    }
+
+    const verify = async () => {
+      const result = await verifyPaymentSession(sessionId);
+      if (result.success) {
+        setStatus('success');
+        startTimer();
+      } else {
+        setStatus('error');
+      }
+    };
+
+    verify();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId]);
+
+  if (status === 'verifying') {
+    return (
+       <div className="min-h-screen pt-32 flex items-center justify-center">
+         <div className="text-center text-white">
+           <Loader2 className="w-10 h-10 animate-spin mx-auto mb-4 text-gold" />
+           <h2 className="text-2xl font-heading">Verifying Payment...</h2>
+         </div>
+       </div>
+    );
+  }
+
+  if (status === 'error') {
+     return (
+       <div className="min-h-screen pt-32 flex items-center justify-center">
+         <GlassCard className="p-8 text-center border-red-500/30 max-w-md">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-white mb-2">Verification Failed</h2>
+            <p className="text-slate-300 mb-6">We could not confirm your payment with the stars. Please contact support.</p>
+            <GlowButton onClick={() => router.push('/')}>Return Home</GlowButton>
+         </GlassCard>
+       </div>
+     )
+  }
 
   return (
     <div className="min-h-screen pt-32 pb-20 px-4 flex items-center justify-center relative overflow-hidden">

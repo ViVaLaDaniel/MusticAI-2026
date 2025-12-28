@@ -31,7 +31,7 @@ export function TestimonialMarquee() {
               ))}
             </div>
             <p className="text-white/80 text-sm whitespace-normal mb-4 leading-relaxed font-light">
-              "{t.text}"
+              &quot;{t.text}&quot;
             </p>
             <div className="flex justify-between items-center text-xs">
               <span className="font-semibold text-white">{t.author}</span>
